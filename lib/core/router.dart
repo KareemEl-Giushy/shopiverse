@@ -5,10 +5,10 @@ import 'package:shopiverse/persentation/screens/login.dart';
 import 'package:shopiverse/persentation/screens/onboarding.dart';
 
 class Routes {
-  static const String homeRoute = '/home';
-  static const String loginRoute = '/login';
-  static const String onBoardingRoute = '/onBoarding';
-  static const String listRoute = '/list';
+  static const homeRoute = '/home';
+  static const loginRoute = '/login';
+  static const onBoardingRoute = '/onBoarding';
+  static const listRoute = '/list';
 }
 
 class RouteGenerator {
@@ -23,16 +23,12 @@ class RouteGenerator {
       case Routes.listRoute:
         return MaterialPageRoute(builder: (_) => ListPage());
       default:
-        return unDefinedRoute();
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            appBar: AppBar(title: Text("404")),
+            body: Center(child: Text("Page Not Found")),
+          ),
+        );
     }
-  }
-
-  static Route<dynamic> unDefinedRoute() {
-    return MaterialPageRoute(
-      builder: (_) => Scaffold(
-        appBar: AppBar(title: Text("404")),
-        body: Center(child: Text("Page Not Found")),
-      ),
-    );
   }
 }
