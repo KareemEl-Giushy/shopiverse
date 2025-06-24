@@ -50,17 +50,18 @@ class ListPage extends StatelessWidget {
               ),
             ),
           ),
-          ListView(
-            shrinkWrap: true,
-
-            children: [
-              ItemCard(),
-              ItemCard(),
-              ItemCard(),
-              ItemCard(),
-              ItemCard(),
-              ItemCard(),
-            ],
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ItemCard(),
+                ItemCard(),
+                ItemCard(),
+                ItemCard(),
+                ItemCard(),
+                ItemCard(),
+              ],
+            ),
           ),
         ],
       ),

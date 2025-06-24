@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopiverse/core/router.dart';
 import 'package:shopiverse/core/theme/color_manger.dart';
+import 'package:shopiverse/domain/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
@@ -21,25 +23,36 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleLogin() async {
+    if (_formKey.currentState?.validate() != true) return;
     setState(() {
       _isLoading = true;
     });
 
-    Navigator.of(
-      context,
-    ).pushNamedAndRemoveUntil(Routes.homeRoute, (_) => true);
-
+    final success = await AuthService().login(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
     setState(() {
       _isLoading = false;
     });
 
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Login successful!'),
-        backgroundColor: Colors.green,
-      ),
-    );
+    if (success) {
+      Navigator.of(context).pushReplacementNamed("/home");
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login successful!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login failed"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -81,107 +94,116 @@ class _LoginPageState extends State<LoginPage> {
 
               SizedBox(height: 40),
 
-              // Email field
-              Text(
-                'Email',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[700],
-                ),
-              ),
-              SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: ColorManger.primary, width: 2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: "example@example.com",
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
-                  ),
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-              ),
-
-              SizedBox(height: 24),
-
-              // Password field
-              Text(
-                'Password',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[700],
-                ),
-              ),
-              SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.green, width: 2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: TextField(
-                  controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    hintText: '••••••••••••',
-                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: Colors.grey[600],
-                        size: 20,
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Email field
+                    Text(
+                      'Email',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[700],
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
                     ),
-                  ),
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              // Forgot Password
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    // Handle forgot password
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Forgot password clicked'),
-                        backgroundColor: Colors.blue,
+                    SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: ColorManger.primary,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    );
-                  },
-                  child: Text(
-                    'Forgot Password',
-                    style: TextStyle(
-                      color: Colors.blue[600],
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      child: TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Email is required';
+                          }
+                          final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                          if (!emailRegex.hasMatch(value.trim())) {
+                            return 'Enter a valid email';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          hintText: "example@example.com",
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          hintStyle: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 16,
+                          ),
+                        ),
+                        style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                      ),
                     ),
-                  ),
+                    SizedBox(height: 24),
+
+                    // Password field
+                    Text(
+                      'Password',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.green, width: 2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextFormField(
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Password is required';
+                          }
+                          if (value.trim().length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          hintText: '••••••••••••',
+                          hintStyle: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 16,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.grey[600],
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                        style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
