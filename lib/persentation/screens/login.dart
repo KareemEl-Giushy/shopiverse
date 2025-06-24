@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shopiverse/core/router.dart';
 import 'package:shopiverse/core/theme/color_manger.dart';
 import 'package:shopiverse/domain/services/auth_service.dart';
 
