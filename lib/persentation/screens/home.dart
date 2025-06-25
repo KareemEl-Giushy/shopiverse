@@ -1,17 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:shopiverse/core/router.dart';
 import 'package:shopiverse/core/theme/color_manger.dart';
+import 'package:shopiverse/domain/models/order.dart';
+import 'package:shopiverse/domain/models/profile.dart';
+import 'package:shopiverse/domain/services/auth_service.dart';
+import 'package:shopiverse/domain/services/delivery_profile.dart';
+import 'package:shopiverse/domain/services/orders_service.dart';
 import 'package:shopiverse/persentation/widgets/item_card.dart';
 import 'package:shopiverse/persentation/widgets/list_button.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  ProfileModel profile = ProfileModel();
+  List<OrderModel> orders = [];
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    final profileResult = await DeliveryProfile()
+        .getProfile(); // call from api_service.dart
+
+    final orderResult = await OrdersService().getAllOrders();
+
+    if (profileResult is bool) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed Loading Data"),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      return;
+    }
+
+    if (orderResult == []) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed Loading Data"),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      return;
+    }
+
+    setState(() {
+      profile = profileResult;
+
+      orders = orderResult;
+
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      drawer: Drawer(child: Container()),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.all(10),
+          children: loading
+              ? [
+                  SafeArea(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Center(child: CircularProgressIndicator())],
+                    ),
+                  ),
+                ]
+              : [
+                  DrawerHeader(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(fontSize: 42, color: Colors.black),
+                            children: [
+                              TextSpan(text: "Hi "),
+                              TextSpan(
+                                text:
+                                    '${profile.firstName} ${profile.lastName},',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(profile.email),
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap: () async {
+                      await AuthService().logout();
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil("/login", (Route r) => true);
+                    },
+                  ),
+                ],
+        ),
+      ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
@@ -34,11 +143,15 @@ class HomePage extends StatelessWidget {
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
+          Builder(
+            builder: (context) {
+              return IconButton(
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                icon: Icon(Icons.person, color: ColorManger.primary),
+              );
             },
-            icon: Icon(Icons.person, color: ColorManger.primary),
           ),
         ],
       ),
@@ -139,7 +252,27 @@ class HomePage extends StatelessWidget {
                 child: Text("See All", style: TextStyle(color: Colors.black)),
               ),
             ),
-            Column(children: [ItemCard(), ItemCard(), ItemCard(), ItemCard()]),
+            FutureBuilder(
+              future: OrdersService().getAllOrders(),
+              builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text("ERROR: ${snapshot.error}");
+                } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data != null) {
+                  List torders = snapshot.data;
+                  if (torders.isEmpty) {
+                    return Center(child: Text("No Top Events"));
+                  }
+                  return Column(
+                    children: [for (var o in torders) ItemCard(order: o)],
+                  );
+                }
+                return Center(child: Text("Error"));
+              },
+            ),
+            // Column(children: [ItemCard(), ItemCard(), ItemCard(), ItemCard()]),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListButton(

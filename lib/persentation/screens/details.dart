@@ -1,8 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:shopiverse/core/theme/color_manger.dart';
+import 'package:shopiverse/domain/models/order.dart';
+import 'package:shopiverse/domain/services/orders_service.dart';
 
-class DetailsPage extends StatelessWidget {
-  const DetailsPage({super.key});
+class DetailsPage extends StatefulWidget {
+  final OrderModel order;
+  const DetailsPage({super.key, required this.order});
+
+  @override
+  State<DetailsPage> createState() => _DetailsPageState();
+}
+
+class _DetailsPageState extends State<DetailsPage> {
+  final TextEditingController _otpController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _handleLogin() async {
+    if (_formKey.currentState?.validate() != true) return;
+    setState(() {
+      _isLoading = true;
+    });
+
+    final success = await OrdersService().confirmOrder(
+      _otpController.text.trim(),
+    );
+    setState(() {
+      _isLoading = false;
+    });
+    if (success) {
+      Navigator.of(context).pushReplacementNamed("/home");
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Confirmation successful!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Confirmation failed"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,30 +130,12 @@ class DetailsPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                "Details: ",
-                                style: TextStyle(fontFamily: "Poppins"),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  "Some Details about the product",
-                                  style: TextStyle(fontFamily: "Poppins"),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
                                 "Location: ",
                                 style: TextStyle(fontFamily: "Poppins"),
                               ),
                               Flexible(
                                 child: Text(
-                                  "Tanta",
+                                  widget.order.address,
                                   style: TextStyle(fontFamily: "Poppins"),
                                 ),
                               ),
@@ -122,7 +153,7 @@ class DetailsPage extends StatelessWidget {
                               ),
                               Flexible(
                                 child: Text(
-                                  "Cash",
+                                  widget.order.paymentMethod,
                                   style: TextStyle(fontFamily: "Poppins"),
                                 ),
                               ),
@@ -135,12 +166,12 @@ class DetailsPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                "Customer Name: ",
+                                "Total Price: ",
                                 style: TextStyle(fontFamily: "Poppins"),
                               ),
                               Flexible(
                                 child: Text(
-                                  "Kareem",
+                                  "${widget.order.finalPrice} EGP",
                                   style: TextStyle(fontFamily: "Poppins"),
                                 ),
                               ),
@@ -158,7 +189,7 @@ class DetailsPage extends StatelessWidget {
                               ),
                               Flexible(
                                 child: Text(
-                                  "0000000",
+                                  widget.order.phone,
                                   style: TextStyle(fontFamily: "Poppins"),
                                 ),
                               ),
@@ -171,16 +202,106 @@ class DetailsPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                "OTP: ",
+                                "Note: ",
                                 style: TextStyle(fontFamily: "Poppins"),
                               ),
                               Flexible(
                                 child: Text(
-                                  "123",
+                                  widget.order.note,
                                   style: TextStyle(fontFamily: "Poppins"),
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'OTP',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Form(
+                          key: _formKey,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: ColorManger.primary,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: TextFormField(
+                              controller: _otpController,
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Can't be empty";
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                hintText: "1234",
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                hintStyle: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 16,
+                                ),
+                              ),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 24),
+
+                        SizedBox(
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _handleLogin,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              disabledBackgroundColor: Colors.green[300],
+                            ),
+                            child: _isLoading
+                                ? SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : Text(
+                                    'Confirm Order',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                           ),
                         ),
                       ],

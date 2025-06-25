@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shopiverse/core/theme/color_manger.dart';
+import 'package:shopiverse/domain/models/order.dart';
 import 'package:shopiverse/persentation/screens/details.dart';
 
 class ItemCard extends StatelessWidget {
-  const ItemCard({super.key});
+  final OrderModel order;
+  const ItemCard({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +25,27 @@ class ItemCard extends StatelessWidget {
                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8wvy8H117i_nZSl7iemEXWOHEklUW_Q_EXg&s",
                 width: 200,
               ),
-              Padding(
+              Container(
+                width: 150,
                 padding: const EdgeInsets.all(8.0),
-                child: const Column(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("location"),
-                    Text("location"),
-                    Text("location"),
+                    Text(
+                      order.address,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                    Text(
+                      order.note,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                    Text(order.status),
+                    Text(order.paymentMethod),
+                    Text("${order.finalPrice} EGP"),
                   ],
                 ),
               ),
@@ -40,9 +56,9 @@ class ItemCard extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => DetailsPage()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => DetailsPage(order: order)),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF00B14F), // Green background

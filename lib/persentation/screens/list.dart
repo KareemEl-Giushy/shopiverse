@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopiverse/core/theme/color_manger.dart';
+import 'package:shopiverse/domain/services/orders_service.dart';
 import 'package:shopiverse/persentation/widgets/item_card.dart';
 
 class ListPage extends StatelessWidget {
@@ -50,17 +51,26 @@ class ListPage extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ItemCard(),
-                ItemCard(),
-                ItemCard(),
-                ItemCard(),
-                ItemCard(),
-                ItemCard(),
-              ],
+          SingleChildScrollView(
+            child: FutureBuilder(
+              future: OrdersService().getAllOrders(),
+              builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text("ERROR: ${snapshot.error}");
+                } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data != null) {
+                  List torders = snapshot.data;
+                  if (torders.isEmpty) {
+                    return Center(child: Text("No Top Events"));
+                  }
+                  return Column(
+                    children: [for (var o in torders) ItemCard(order: o)],
+                  );
+                }
+                return Center(child: Text("Error"));
+              },
             ),
           ),
         ],
