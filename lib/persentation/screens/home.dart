@@ -176,8 +176,8 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const Text(
-                        "Hi, Mohammed",
+                      Text(
+                        "Hi, ${profile.firstName}",
                         style: TextStyle(color: Colors.white, fontSize: 20),
                         textAlign: TextAlign.start,
                       ),
