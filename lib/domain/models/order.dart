@@ -1,6 +1,5 @@
-import 'package:shopiverse/domain/models/product.dart';
-
 class OrderModel {
+  String orderID;
   String address;
   String phone;
   String note;
@@ -9,9 +8,11 @@ class OrderModel {
   String finalPrice;
   String status;
   String paymentMethod;
-  List<ProductModel>? products;
+  String username;
+  String createdAt;
 
   OrderModel({
+    this.orderID = "",
     this.address = "",
     this.phone = "",
     this.note = "",
@@ -20,11 +21,13 @@ class OrderModel {
     this.finalPrice = "",
     this.status = "",
     this.paymentMethod = "",
-    this.products,
+    this.username = "",
+    this.createdAt = "",
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
+      orderID: json["orderId"],
       address: json["address"],
       phone: json["phone"],
       note: json["note"],
@@ -33,6 +36,8 @@ class OrderModel {
       finalPrice: json["finalPrice"].toString(),
       status: json["status"],
       paymentMethod: json["paymentMethod"],
+      username: json["createdBy"]["username"],
+      createdAt: json["createdAt"],
     );
   }
 }

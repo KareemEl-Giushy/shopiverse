@@ -5,7 +5,7 @@ import 'package:shopiverse/domain/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final isLoggedIn = await AuthService().isLoggedIn();
+  final isLoggedIn = await AuthService().isLoggedIn(); // is already logged in
 
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }

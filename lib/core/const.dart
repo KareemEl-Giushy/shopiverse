@@ -1,2 +1,2 @@
-const api = "https://shopiverse.duckdns.org";
+const api = "https://shopiverse.dragonteam.dev";
 const apiKey = "";

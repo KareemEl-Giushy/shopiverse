@@ -112,110 +112,154 @@ class _DetailsPageState extends State<DetailsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.network(
-                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8wvy8H117i_nZSl7iemEXWOHEklUW_Q_EXg&s",
-                      width: MediaQuery.of(context).size.width * 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 35),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 40),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Location: ",
+                  const SizedBox(height: 10),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Order ID: ",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            Flexible(
+                              child: Text(
+                                widget.order.orderID,
                                 style: TextStyle(fontFamily: "Poppins"),
                               ),
-                              Flexible(
-                                child: Text(
-                                  widget.order.address,
-                                  style: TextStyle(fontFamily: "Poppins"),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Payment: ",
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Username: ",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            Flexible(
+                              child: Text(
+                                widget.order.username,
                                 style: TextStyle(fontFamily: "Poppins"),
                               ),
-                              Flexible(
-                                child: Text(
-                                  widget.order.paymentMethod,
-                                  style: TextStyle(fontFamily: "Poppins"),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Total Price: ",
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Location: ",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            Flexible(
+                              child: Text(
+                                widget.order.address,
                                 style: TextStyle(fontFamily: "Poppins"),
                               ),
-                              Flexible(
-                                child: Text(
-                                  "${widget.order.finalPrice} EGP",
-                                  style: TextStyle(fontFamily: "Poppins"),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Phone Number: ",
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Phone Number: ",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            Flexible(
+                              child: Text(
+                                widget.order.phone,
                                 style: TextStyle(fontFamily: "Poppins"),
                               ),
-                              Flexible(
-                                child: Text(
-                                  widget.order.phone,
-                                  style: TextStyle(fontFamily: "Poppins"),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Note: ",
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Payment: ",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            Flexible(
+                              child: Text(
+                                widget.order.paymentMethod,
                                 style: TextStyle(fontFamily: "Poppins"),
                               ),
-                              Flexible(
-                                child: Text(
-                                  widget.order.note,
-                                  style: TextStyle(fontFamily: "Poppins"),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Total Price: ",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            Flexible(
+                              child: Text(
+                                "${widget.order.finalPrice} EGP",
+                                style: TextStyle(fontFamily: "Poppins"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Created At: ",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            Flexible(
+                              child: Text(
+                                widget.order.createdAt,
+                                style: TextStyle(fontFamily: "Poppins"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Note: ",
+                              style: TextStyle(fontFamily: "Poppins"),
+                            ),
+                            Flexible(
+                              child: Text(
+                                widget.order.note,
+                                style: TextStyle(fontFamily: "Poppins"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),

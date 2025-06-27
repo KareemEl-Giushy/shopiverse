@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (success) {
-      Navigator.of(context).pushReplacementNamed("/home");
+      Navigator.of(context).pushNamedAndRemoveUntil("/home", (Route r) => true);
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

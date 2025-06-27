@@ -53,7 +53,7 @@ class ListPage extends StatelessWidget {
           ),
           SingleChildScrollView(
             child: FutureBuilder(
-              future: OrdersService().getAllOrders(),
+              future: OrdersService().getDeliveredOrders(),
               builder: (context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());

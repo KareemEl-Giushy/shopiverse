@@ -31,20 +31,7 @@ class _HomePageState extends State<HomePage> {
     final profileResult = await DeliveryProfile()
         .getProfile(); // call from api_service.dart
 
-    final orderResult = await OrdersService().getAllOrders();
-
     if (profileResult is bool) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Failed Loading Data"),
-          backgroundColor: Colors.red,
-        ),
-      );
-
-      return;
-    }
-
-    if (orderResult == []) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Failed Loading Data"),
@@ -57,8 +44,6 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       profile = profileResult;
-
-      orders = orderResult;
 
       loading = false;
     });
@@ -78,6 +63,21 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [Center(child: CircularProgressIndicator())],
                     ),
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap: () async {
+                      await AuthService().logout();
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil("/login", (Route r) => true);
+                    },
                   ),
                 ]
               : [
@@ -248,12 +248,14 @@ class _HomePageState extends State<HomePage> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pushNamed(Routes.listRoute);
+                },
                 child: Text("See All", style: TextStyle(color: Colors.black)),
               ),
             ),
             FutureBuilder(
-              future: OrdersService().getAllOrders(),
+              future: OrdersService().getPendingOrders(),
               builder: (context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());

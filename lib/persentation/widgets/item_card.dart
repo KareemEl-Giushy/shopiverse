@@ -21,12 +21,8 @@ class ItemCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Image.network(
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8wvy8H117i_nZSl7iemEXWOHEklUW_Q_EXg&s",
-                width: 200,
-              ),
               Container(
-                width: 150,
+                // width: 150,
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,9 +39,9 @@ class ItemCard extends StatelessWidget {
                       maxLines: 1,
                       softWrap: false,
                     ),
-                    Text(order.status),
-                    Text(order.paymentMethod),
-                    Text("${order.finalPrice} EGP"),
+                    Text("Status: ${order.status}"),
+                    Text("Payment: ${order.paymentMethod}"),
+                    Text("Price: ${order.finalPrice} EGP"),
                   ],
                 ),
               ),

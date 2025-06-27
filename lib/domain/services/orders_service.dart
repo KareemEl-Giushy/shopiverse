@@ -6,11 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:shopiverse/domain/services/auth_service.dart';
 
 class OrdersService {
-  static const String _ordersUrl = "$api/order/orders";
+  static const String _pendingOrdersUrl = "$api/order/pending-orders";
+  static const String _deliveredOrdersUrl = "$api/order/delivered-orders";
   static const String _confirmUrl = "$api/order/confirm-order";
 
-  Future<List<OrderModel>> getAllOrders() async {
-    final uri = Uri.parse(_ordersUrl);
+  Future<List<OrderModel>> getPendingOrders() async {
+    final uri = Uri.parse(_pendingOrdersUrl);
     final token = await AuthService().getToken();
 
     List<OrderModel> orders = [];
@@ -30,12 +31,37 @@ class OrdersService {
         for (Map<String, dynamic> d in data) {
           OrderModel o = OrderModel.fromJson(d);
 
-          // List<ProductModel> ps = [];
-          // for (Map<String, dynamic> p in data["products"]) {
-          //   ps.add(ProductModel.fromJson(p));
-          // }
+          orders.add(o);
+        }
+      } else {
+        print('loading orders failed: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during loading orders: $e');
+    }
+    return orders;
+  }
 
-          // o.products = ps;
+  Future<List<OrderModel>> getDeliveredOrders() async {
+    final uri = Uri.parse(_deliveredOrdersUrl);
+    final token = await AuthService().getToken();
+
+    List<OrderModel> orders = [];
+    try {
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Host': uri.host,
+          'Authorization': "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        for (Map<String, dynamic> d in data) {
+          OrderModel o = OrderModel.fromJson(d);
 
           orders.add(o);
         }
@@ -45,6 +71,7 @@ class OrdersService {
     } catch (e) {
       print('Error during loading orders: $e');
     }
+
     return orders;
   }
 
